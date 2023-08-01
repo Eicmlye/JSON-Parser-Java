@@ -1,13 +1,13 @@
 package jsonparser.exception;
 
-public class MissingDelimiterException extends JsonParserException {
+public class InvalidLiteralException extends InvalidValueException {
 	private static final long serialVersionUID = 1L;
-
+	
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public MissingDelimiterException() {
+    public InvalidLiteralException() {
         super();
     }
 
@@ -18,7 +18,7 @@ public class MissingDelimiterException extends JsonParserException {
      * @param   message   the detail message. The detail message is saved for
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public MissingDelimiterException(String message) {
+    public InvalidLiteralException(String message) {
         super(message);
     }
 
@@ -36,7 +36,7 @@ public class MissingDelimiterException extends JsonParserException {
      *         unknown.)
      * @since  1.4
      */
-    public MissingDelimiterException(String message, Throwable cause) {
+    public InvalidLiteralException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -52,7 +52,7 @@ public class MissingDelimiterException extends JsonParserException {
      *         unknown.)
      * @since  1.4
      */
-    public MissingDelimiterException(Throwable cause) {
+    public InvalidLiteralException(Throwable cause) {
         super(cause);
     }
 }

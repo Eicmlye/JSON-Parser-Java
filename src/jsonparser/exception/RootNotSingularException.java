@@ -1,6 +1,6 @@
 package jsonparser.exception;
 
-public class RootNotSingularException extends InvalidValueException {
+public class RootNotSingularException extends JsonParserException {
 	private static final long serialVersionUID = 1L;
 
     /** Constructs a new runtime exception with {@code null} as its
