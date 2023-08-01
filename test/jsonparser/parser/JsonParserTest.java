@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.junit.jupiter.api.Disabled;
+//import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import jsonparser.exception.*;
@@ -99,6 +99,13 @@ class JsonParserTest {
 		JsonValue keyValue = new JsonValue(contents);
 		
 		obj.put(key, keyValue);
+	}
+
+	@Test
+	void test() {
+		JsonValue val = new JsonValue("hi");
+		val.setValue(true);
+		System.out.println(val.getValue());
 	}
 	
 //	@Disabled
@@ -347,6 +354,9 @@ class JsonParserTest {
 		});
 		assertThrows(InvalidObjectException.class, () -> {
 			parser.parse("{\"key\":123\t \"key2\":456}");
+		});
+		assertThrows(InvalidObjectException.class, () -> {
+			parser.parse("{\"key\":123,\"key\":456}");
 		});
 	}
 

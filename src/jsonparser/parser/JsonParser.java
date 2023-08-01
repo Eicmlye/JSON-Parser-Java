@@ -27,11 +27,63 @@ public class JsonParser {
 		this.cur = 0;
 	}
 	
-	/* JavaBeans */
+	/* parser APIs */
 	public JsonValue getValue() {
 		return this.value;
 	}
-	/* cursor manipulation functions */
+	/**
+	 * {@code parse()} is the user API for parsing JSON context.
+	 * 
+	 * @return JsonParser
+	 * @throws ExpectValueException
+	 * @throws MissingDelimiterException
+	 * @throws RootNotSingularException
+	 */
+	public JsonParser parse()
+			throws	ExpectValueException,
+					MissingDelimiterException,
+					RootNotSingularException
+	{
+		rewind();
+		
+		if (isEndOfContext()) {
+			throw new ExpectValueException("Empty input. ");
+		}
+		
+		parseWhitespace();
+
+		if (isEndOfContext()) {
+			throw new ExpectValueException("The input context contains only whitespace. ");
+		}
+		
+		parseJson();
+		
+		if (!isEndOfContext()) {
+			if (!isCurWhitespace()) {
+				throw new MissingDelimiterException("Context not in JSON format. "
+								+ "Separate by whitespaces if more than 1 item is entered. ");
+			}
+
+			parseWhitespace();
+		}
+		
+		if (!isEndOfContext()) {
+			/* 
+			 * Private parser functions should NOT deal with this exception.
+			 * This exception can be made into an interface of a future multi-parser.
+			 */
+			throw new RootNotSingularException("Extra context detected after the first valid JSON. ");
+		}
+		
+		return this;
+	}
+	public JsonParser parse(String context) {
+		this.context = context;
+		
+		return parse();
+	}
+
+	/* cursor manipulation methods */
 	private void rewind() {
 		this.cur = 0;
 		
@@ -160,7 +212,6 @@ public class JsonParser {
 	private String parseUChar()
 			throws InvalidCharacterException, IncompleteItemException 
 	{
-		/* TODO: this function does not check if the surrogates are in proper range. */
 		assert !isEndOfContext();
 		assert getCurChar() == 'u';
 		
@@ -190,6 +241,10 @@ public class JsonParser {
 			catch (IndexOutOfBoundsException | NumberFormatException e) {
 				throw new IncompleteItemException("Incomplete escape character. "
 									+ "Should only use hex-digits and exactly 4 digits are allowed.");
+			}
+			
+			if (!(lowSurrogate >= 0xDC00 && lowSurrogate <= 0xDFFF)) {
+				throw new InvalidCharacterException("Low surrogate should be in range 0xDC00 - 0xDFFF. ");
 			}
 			codepoint = 0x10000 + (highSurrogate - 0xD800) * 0x400 + (lowSurrogate - 0xDC00);
 
@@ -221,12 +276,13 @@ public class JsonParser {
 		++cur;
 		
 		String result = "";
+		char ch = getCurChar();
 		
-		if (isEndOfContext() || getCurChar() == '\"') {
+		if (isEndOfContext() || ch == '\"') {
 			throw new IncompleteItemException("Incomplete escape character. ");
 		}
 		
-		result = switch (getCurChar()) {
+		result = switch (ch) {
 		case '\"' -> "\"";
 		case '\\' -> "\\";
 		case '/' -> "/";
@@ -254,11 +310,12 @@ public class JsonParser {
 		
 		char ch = getCurChar();
 		if ((ch >= '\u0000' && ch <= '\u001F') || ch == '\"' || ch == '\\') {
-			throw new InvalidCharacterException("Illegal character detected. ");
+			throw new InvalidCharacterException("Illegal character detected. "
+							+ "\\u0000 - \\u001F, the backslash and quotation mark "
+							+ "should be entered as escape char.");
 		}
-		else {
-			result += ch;
-		}
+
+		result += ch;
 		
 		++cur;
 		
@@ -284,10 +341,9 @@ public class JsonParser {
 		if (isEndOfContext()) {
 			throw new MissingEndTagException("Missing closing quotation mark. ");
 		}
-		else { /* skip ending '\"' */
-			++cur;
-		}
 
+		++cur; /* skip ending '\"' */
+		
 		return result;
 	}
 	private void parseObjectMember(HashMap<String, JsonValue> result)
@@ -301,6 +357,9 @@ public class JsonParser {
 		assert getCurChar() == '\"';
 		
 		String key = parseRawString();
+		if (result.containsKey(key)) {
+			throw new InvalidObjectException("Duplicate key items found. ");
+		}
 		
 		parseWhitespace();
 		if (isEndOfContext()) { // {"key"\t
@@ -323,6 +382,7 @@ public class JsonParser {
 		
 		return;
 	}
+	
 	/* JSON item parsers */
 	/**
 	 * {@code parseNull()} parses {@code JsonType.NULL}, which in JSON
@@ -354,7 +414,7 @@ public class JsonParser {
 					+ item + "\". ");
 		}
 		
-		value.setType(JsonType.NULL);
+		value.setValue();
 		cur += 4;
 		
 		return this;
@@ -389,7 +449,7 @@ public class JsonParser {
 						+ item + "\". ");
 		}
 		
-		value.setType(JsonType.TRUE);
+		value.setValue(true);
 		cur += 4;
 		
 		return this;
@@ -424,7 +484,7 @@ public class JsonParser {
 					+ item + "\". ");
 		}
 		
-		value.setType(JsonType.FALSE);
+		value.setValue(false);
 		cur += 5;
 		
 		return this;
@@ -464,6 +524,7 @@ public class JsonParser {
 					+ item + "\". ");
 		}
 		
+		value.clear();
 		value.setType(type);
 		cur += len;
 		
@@ -505,8 +566,7 @@ public class JsonParser {
 			parseExponentComponent();
 		}
 		
-		value.setType(JsonType.NUMBER);
-		value.setNum(Double.parseDouble(context.substring(tmpCur, cur)));
+		value.setValue(Double.parseDouble(context.substring(tmpCur, cur)));
 		
 		/* 
 		 * -0.0 is less than 0.0 in Java Double type, which is not the case
@@ -517,7 +577,8 @@ public class JsonParser {
 		if (cache == -0.0) {
 			value.setNum(0.0);
 		}
-		else if (cache == Double.POSITIVE_INFINITY || cache == Double.NEGATIVE_INFINITY) {
+
+		if (cache == Double.POSITIVE_INFINITY || cache == Double.NEGATIVE_INFINITY) {
 			throw new InvalidNumberException("The absolute value is too large. ");
 		}
 		
@@ -539,8 +600,7 @@ public class JsonParser {
 		
 		String result = parseRawString();
 		
-		value.setType(JsonType.STRING);
-		value.setStr(result);
+		value.setValue(result);
 		
 		return this;
 	}
@@ -564,6 +624,7 @@ public class JsonParser {
 		assert getCurChar() == '[';
 		
 		ArrayList<JsonValue> result = new ArrayList<JsonValue>();
+		char ch = '\0';
 		
 		do {
 			++cur; /* skip comma or '[' */
@@ -577,7 +638,11 @@ public class JsonParser {
 				// [1,2,\t
 				throw new InvalidArrayException("JSON dose not allow ending commas. ");
 			}
-			if (getCurChar() == ']') {
+			ch = getCurChar(); /* This line is necessary for the empty array [] to pass the test.
+			 					* Empty array will invoke {@code break}, and the {@code while}
+			 					* statement will not be triggered, so we must {@code getCurChar()}
+			 					* here before the empty array goes out of {@code do...while}. */
+			if (ch == ']') {
 				if (result.size() != 0) { // [1,2,]
 					throw new InvalidArrayException("JSON dose not allow ending commas. ");
 				}
@@ -592,29 +657,38 @@ public class JsonParser {
 				throw new MissingEndTagException("Missing ending bracket. ");
 			}
 		}
-		while (getCurChar() == ',');
+		while ((ch = getCurChar()) == ',');
 		
-		if (getCurChar() != ']' ) { // [1,2 \t 3]
+		if (ch != ']' ) { // [1,2 \t 3]
 			throw new InvalidArrayException("Missing comma. ");
 		}
 		
 		++cur;
 		
-		value.setType(JsonType.ARRAY);
-		value.setArr(result);
+		value.setValue(result);
 		
 		return this;
 	}
+	/**
+	 * {@code parseObject()} parses {@code JsonType.OBJECT}.
+	 * 
+	 * @return JsonValue
+	 * @throws MissingEndTagException
+	 * @throws InvalidObjectException
+	 * @throws InvalidValueException
+	 * @throws ExpectValueException
+	 */
 	private JsonParser parseObject()
 			throws MissingEndTagException,
-			InvalidObjectException, 
-			InvalidValueException, 
-			ExpectValueException
-	{ /* TODO: ensure that the keys are distinct from each other. */
+					InvalidObjectException, 
+					InvalidValueException, 
+					ExpectValueException
+	{ /* {@code parseObjectMember()} ensures that the keys are distinct from each other. */
 		assert !isEndOfContext();
 		assert getCurChar() == '{';
 		
 		HashMap<String, JsonValue> result = new HashMap<String, JsonValue>();
+		char ch = '\0';
 		
 		do {
 			++cur; /* skip comma or '{' */
@@ -628,14 +702,18 @@ public class JsonParser {
 				// {"key":123,\t
 				throw new InvalidObjectException("JSON dose not allow ending commas. ");
 			}
-			if (getCurChar() == '}') {
+			ch = getCurChar();/* This line is necessary for the empty object {} to pass the test.
+							   * Empty object will invoke {@code break}, and the {@code while}
+							   * statement will not be triggered, so we must {@code getCurChar()}
+							   * here before the empty object goes out of {@code do...while}. */
+			if (ch == '}') {
 				if (result.size() != 0) { // {"key":123,\t}
 					throw new InvalidObjectException("JSON dose not allow ending commas. ");
 				}
 				
 				break; // Empty object {}.
 			}
-			if (getCurChar() != '\"') { // {123:456}
+			if (ch != '\"') { // {123:456}
 				throw new InvalidObjectException("Object key must be a string surrounded by quotation marks. ");
 			}
 			
@@ -646,16 +724,15 @@ public class JsonParser {
 				throw new MissingEndTagException("Missing ending brace. ");
 			}
 		}
-		while (getCurChar() == ',');
+		while ((ch = getCurChar()) == ',');
 		
-		if (getCurChar() != '}' ) { // {"key":123\t "key2":456}
+		if (ch != '}' ) { // {"key":123\t "key2":456}
 			throw new InvalidObjectException("Missing comma. ");
 		}
 		
 		++cur;
 		
-		value.setType(JsonType.OBJECT);
-		value.setObj(result);
+		value.setValue(result);
 		
 		return this;
 	}
@@ -695,49 +772,6 @@ public class JsonParser {
 			break;
 		default:
 			throw new InvalidValueException("Invalid JSON context. ");
-		}
-		
-		return this;
-	}
-	
-	/* parser API */
-	public JsonParser parse(String context) {
-		this.context = context;
-		rewind();
-		
-		/* 
-		 * {@code cur} will never be greater than the length of {@code context},
-		 * so here {@code IndexOutOfBoundsException} is never thrown by
-		 * {@code substring()} in {@code isEndOfContext()}. 
-		 */
-		if (isEndOfContext()) {
-			throw new ExpectValueException("Empty input. ");
-		}
-		
-		parseWhitespace();
-
-		if (isEndOfContext()) {
-			throw new ExpectValueException("The input context contains only whitespace. ");
-		}
-		
-		parseJson();
-		
-		if (!isEndOfContext()) {
-			if (isCurWhitespace()) {
-				parseWhitespace();
-			}
-			else {
-				throw new MissingDelimiterException("Context not in JSON format. "
-								+ "Separate by whitespaces if more than 1 item is entered. ");
-			}
-		}
-		
-		if (!isEndOfContext()) {
-			/* 
-			 * Private parser functions should not deal with this exception.
-			 * This exception can be made into an interface of a future multi-parser.
-			 */
-			throw new RootNotSingularException("Extra context detected after the first valid JSON. ");
 		}
 		
 		return this;

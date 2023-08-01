@@ -7,8 +7,6 @@ import java.lang.RuntimeException;
  * 	|
  * 	|-------ExpectValueException
  * 	|
- * 	|-------TypeValueCorrespondencyException
- * 	|
  * 	|-------InvalidValueException
  * 	|		|
  * 	|		|-------InvalidLiteralException
