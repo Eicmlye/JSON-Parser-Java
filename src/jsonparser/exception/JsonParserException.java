@@ -10,12 +10,24 @@ import java.lang.RuntimeException;
  * 	|-------TypeValueCorrespondencyException
  * 	|
  * 	|-------InvalidValueException
- * 			|
- * 			|-------RootNotSingularException
- * 			|
- * 			|-------IncompleteNumberException
- * 			|
- * 			|-------MissingDelimiterException
+ * 	|		|
+ * 	|		|-------InvalidLiteralException
+ * 	|		|
+ * 	|		|-------InvalidNumberException
+ * 	|		|
+ * 	|		|-------InvalidCharacterException
+ * 	|		|
+ * 	|		|-------InvalidArrayException
+ * 	|		|
+ * 	|		|-------InvalidObjectException
+ * 	|
+ * 	|-------RootNotSingularException
+ * 	|
+ * 	|-------IncompleteItemException
+ * 	|
+ * 	|-------MissingDelimiterException
+ * 	|
+ * 	|-------MissingEndTagException
  */
 public class JsonParserException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
