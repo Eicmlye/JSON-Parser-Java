@@ -173,6 +173,7 @@ class JsonParserTest {
 		assertEqualItems("\\", 						"\"\\u005C\""); 
 		assertEqualItems("\"", 						"\"\\u0022\""); 
 		assertEqualItems("\uD834\uDD1E", 			"\"\\uD834\\uDD1E\""); /* G clef sign U+1D11E */
+		assertEqualItems("\uD834\uDD1E", 			"\"\uD834\uDD1E\"");
 		assertEqualItems("\uD834\uDD1E", 			"\"\\ud834\\udd1e\""); 
 	    assertEqualItems("Hello\0World", 			"\"Hello\\u0000World\"");
 	    assertEqualItems("\u0024", 					"\"\\u0024\""); /* Dollar sign U+0024 */
