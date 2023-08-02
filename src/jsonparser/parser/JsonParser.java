@@ -15,7 +15,7 @@ public class JsonParser {
 	private JsonValue value;
 	private int cur;
 	
-	/* constructor */
+	/* constructors */
 	public JsonParser() {
 		this.context = "";
 		this.value = new JsonValue(JsonType.NULL);
@@ -27,7 +27,7 @@ public class JsonParser {
 		this.cur = 0;
 	}
 	
-	/* parser APIs */
+	/* user APIs */
 	public JsonValue getValue() {
 		return this.value;
 	}
@@ -271,6 +271,12 @@ public class JsonParser {
 	private String parseEscapeChar() 
 			throws IncompleteItemException
 	{
+		/* 
+		 * Only \u0000 - \u001F, \u0022 ('\"') and \u005C ('\\')
+		 * MUST be written in escape char. 
+		 * The other char in \u0020 - \u10FFFF are all legal in JSON string
+		 * but still CAN be written in escape char. 
+		 */
 		assert !isEndOfContext();
 		assert getCurChar() == '\\';
 		++cur;
@@ -595,6 +601,12 @@ public class JsonParser {
 	private JsonParser parseString()
 			throws IncompleteItemException, InvalidCharacterException, MissingEndTagException
 	{
+		/* 
+		 * Only \u0000 - \u001F, \u0022 ('\"') and \u005C ('\\')
+		 * MUST be written in escape char. 
+		 * The other char in \u0020 - \u10FFFF are all legal in JSON string
+		 * but still CAN be written in escape char. 
+		 */
 		assert !isEndOfContext();
 		assert getCurChar() == '\"';
 		

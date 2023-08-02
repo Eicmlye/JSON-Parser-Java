@@ -1,11 +1,19 @@
 package jsonparser.parser;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map.Entry;
+
 import jsonparser.exception.*;
 
 public class JsonGenerator {
-	String context;
-	JsonValue value;
-	boolean isGenerated;
+	private String context;
+	private JsonValue value;
+	private boolean isGenerated;
 	
 	/* constructors */
 	public JsonGenerator() {
@@ -75,22 +83,85 @@ public class JsonGenerator {
 		return;
 	}
 	private void generateNumber() {
+		DecimalFormat formatter = new DecimalFormat("#################E0", 
+											DecimalFormatSymbols.getInstance( Locale.ENGLISH ));
+		formatter.setRoundingMode(RoundingMode.DOWN); // turn off auto-rounding
+		formatter.setGroupingUsed(false);
 		
+		context += formatter.format(value.getValue());
 		
 		return;
 	}
 	private void generateString() {
+		context += '\"';
 		
+		String str = (String)value.getValue();
+		for (int index = 0; index < str.length(); ++index) {
+			char ch = str.charAt(index);
+			
+			context += switch(ch) {
+			case '\"' -> "\\\""; 
+			case '\\' -> "\\\\"; 
+			case '/' -> "\\/";
+			case '\b' -> "\\b";
+			case '\f' -> "\\f";
+			case '\n' -> "\\n";
+			case '\r' -> "\\r";
+			case '\t' -> "\\t";
+			default -> {
+				if (ch < 0x20) {
+					String hex = Integer.toHexString(ch);
+					while (hex.length() < 4) {
+						hex = "0" + hex;
+					}
+					
+					yield "\\u" + hex;
+				}
+				
+				yield ch;
+			}
+			};
+		}
+
+		context += '\"';
 		
 		return;
 	}
 	private void generateArray() {
+		context += '[';
 		
+		@SuppressWarnings("unchecked")
+		ArrayList<JsonValue> arr = (ArrayList<JsonValue>)value.getValue();
+		JsonGenerator gen = new JsonGenerator();
+		
+		for (JsonValue val : arr) {
+			context += (val == arr.get(0) ? "" : ',');
+			
+			context += gen.generate(val).getContext();
+		}
+		
+		context += ']';
 		
 		return;
 	}
 	private void generateObject() {
+		context += '{';
 		
+		@SuppressWarnings("unchecked")
+		HashMap<String, JsonValue> hmp = (HashMap<String, JsonValue>)value.getValue();
+		JsonGenerator gen = new JsonGenerator();
+		boolean isFirstEntry = true;
+		
+		for (Entry<String, JsonValue> e : hmp.entrySet()) {
+			context += (isFirstEntry ? "" : ',');
+			isFirstEntry = false;
+			
+			context += '\"' + e.getKey() + "\":";
+			
+			context += gen.generate(e.getValue()).getContext();
+		}
+		
+		context += '}';
 		
 		return;
 	}

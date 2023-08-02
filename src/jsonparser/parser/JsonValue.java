@@ -229,48 +229,47 @@ public class JsonValue implements Cloneable {
         	 */
         	HashMap<String, JsonValue> castedObj = casted.getObj();
         	
-        	if (obj.entrySet().size() == castedObj.entrySet().size()) {
-        		if (obj.entrySet().size() == 0) {
-        			return true;
-        		}
-        		
-            	for (Entry<String, JsonValue> e : obj.entrySet()) {
-            		boolean foundKey = false;
-            		
-            		for (Entry<String, JsonValue> f : castedObj.entrySet()) {
-            			String key = e.getKey();
-            			String castedKey = f.getKey();
-            			
-            			if (key.equals(castedKey)) {
-            				foundKey = true;
-            				
-            				if (!obj.get(key).equals(castedObj.get(castedKey))) {
-            					return false;
-            				}
-            			}
-            			
-            			if (foundKey) {
-            				break;
-            			}
-            		}
-            		
-            		if (!foundKey) {
-            			return false;
-            		}
-            	}
-            	
-            	return true;
-        	}
-        	else {
+        	if (obj.entrySet().size() != castedObj.entrySet().size()) {
         		return false;
         	}
+        	
+        	if (obj.entrySet().size() == 0) {
+    			return true;
+    		}
+    		
+        	for (Entry<String, JsonValue> e : obj.entrySet()) {
+        		boolean foundKey = false;
+        		
+        		for (Entry<String, JsonValue> f : castedObj.entrySet()) {
+        			String key = e.getKey();
+        			String castedKey = f.getKey();
+        			
+        			if (key.equals(castedKey)) {
+        				foundKey = true;
+        				
+        				if (!obj.get(key).equals(castedObj.get(castedKey))) {
+        					return false;
+        				}
+        			}
+        			
+        			if (foundKey) {
+        				break;
+        			}
+        		}
+        		
+        		if (!foundKey) {
+        			return false;
+        		}
+        	}
+        	
+        	return true;
         default:
-        	return false;
+        	throw new JsonParserException("Unknown JSON type. ");
         }
 	}
 	@Override
 	public Object clone() {
-		/* This is NOT shallow copy. Every subelement is copied. */
+		/* Deep copy. */
         try {
         	JsonValue v = (JsonValue) super.clone();
         	v.type = type;
