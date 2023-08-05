@@ -1,13 +1,40 @@
-package jsonparser.exception;
+package pers.ericmonlye.jsonparser.exception;
 
-public class MissingEndTagException extends JsonParserException {
+import java.lang.RuntimeException;
+
+/**
+ * 	JsonParserException
+ * 	|
+ * 	|-------ExpectValueException
+ * 	|
+ * 	|-------InvalidValueException
+ * 	|		|
+ * 	|		|-------InvalidLiteralException
+ * 	|		|
+ * 	|		|-------InvalidNumberException
+ * 	|		|
+ * 	|		|-------InvalidCharacterException
+ * 	|		|
+ * 	|		|-------InvalidArrayException
+ * 	|		|
+ * 	|		|-------InvalidObjectException
+ * 	|
+ * 	|-------RootNotSingularException
+ * 	|
+ * 	|-------IncompleteItemException
+ * 	|
+ * 	|-------MissingDelimiterException
+ * 	|
+ * 	|-------MissingEndTagException
+ */
+public class JsonParserException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
-
+	
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public MissingEndTagException() {
+    public JsonParserException() {
         super();
     }
 
@@ -18,7 +45,7 @@ public class MissingEndTagException extends JsonParserException {
      * @param   message   the detail message. The detail message is saved for
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public MissingEndTagException(String message) {
+    public JsonParserException(String message) {
         super(message);
     }
 
@@ -36,7 +63,7 @@ public class MissingEndTagException extends JsonParserException {
      *         unknown.)
      * @since  1.4
      */
-    public MissingEndTagException(String message, Throwable cause) {
+    public JsonParserException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -52,7 +79,7 @@ public class MissingEndTagException extends JsonParserException {
      *         unknown.)
      * @since  1.4
      */
-    public MissingEndTagException(Throwable cause) {
+    public JsonParserException(Throwable cause) {
         super(cause);
     }
 }

@@ -1,13 +1,13 @@
-package jsonparser.exception;
+package pers.ericmonlye.jsonparser.exception;
 
-public class InvalidLiteralException extends InvalidValueException {
+public class MissingEndTagException extends JsonParserException {
 	private static final long serialVersionUID = 1L;
-	
+
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public InvalidLiteralException() {
+    public MissingEndTagException() {
         super();
     }
 
@@ -18,7 +18,7 @@ public class InvalidLiteralException extends InvalidValueException {
      * @param   message   the detail message. The detail message is saved for
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public InvalidLiteralException(String message) {
+    public MissingEndTagException(String message) {
         super(message);
     }
 
@@ -36,7 +36,7 @@ public class InvalidLiteralException extends InvalidValueException {
      *         unknown.)
      * @since  1.4
      */
-    public InvalidLiteralException(String message, Throwable cause) {
+    public MissingEndTagException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -52,7 +52,7 @@ public class InvalidLiteralException extends InvalidValueException {
      *         unknown.)
      * @since  1.4
      */
-    public InvalidLiteralException(Throwable cause) {
+    public MissingEndTagException(Throwable cause) {
         super(cause);
     }
 }

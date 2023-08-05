@@ -1,16 +1,13 @@
-package jsonparser.exception;
+package pers.ericmonlye.jsonparser.exception;
 
-/**
- * 
- */
-public class ExpectValueException extends JsonParserException {
+public class InvalidObjectException extends InvalidValueException {
 	private static final long serialVersionUID = 1L;
 	
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public ExpectValueException() {
+    public InvalidObjectException() {
         super();
     }
 
@@ -21,7 +18,7 @@ public class ExpectValueException extends JsonParserException {
      * @param   message   the detail message. The detail message is saved for
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public ExpectValueException(String message) {
+    public InvalidObjectException(String message) {
         super(message);
     }
 
@@ -39,7 +36,7 @@ public class ExpectValueException extends JsonParserException {
      *         unknown.)
      * @since  1.4
      */
-    public ExpectValueException(String message, Throwable cause) {
+    public InvalidObjectException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -55,7 +52,7 @@ public class ExpectValueException extends JsonParserException {
      *         unknown.)
      * @since  1.4
      */
-    public ExpectValueException(Throwable cause) {
+    public InvalidObjectException(Throwable cause) {
         super(cause);
     }
 }

@@ -1,40 +1,16 @@
-package jsonparser.exception;
-
-import java.lang.RuntimeException;
+package pers.ericmonlye.jsonparser.exception;
 
 /**
- * 	JsonParserException
- * 	|
- * 	|-------ExpectValueException
- * 	|
- * 	|-------InvalidValueException
- * 	|		|
- * 	|		|-------InvalidLiteralException
- * 	|		|
- * 	|		|-------InvalidNumberException
- * 	|		|
- * 	|		|-------InvalidCharacterException
- * 	|		|
- * 	|		|-------InvalidArrayException
- * 	|		|
- * 	|		|-------InvalidObjectException
- * 	|
- * 	|-------RootNotSingularException
- * 	|
- * 	|-------IncompleteItemException
- * 	|
- * 	|-------MissingDelimiterException
- * 	|
- * 	|-------MissingEndTagException
+ * 
  */
-public class JsonParserException extends RuntimeException {
+public class InvalidValueException extends JsonParserException {
 	private static final long serialVersionUID = 1L;
-	
+
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public JsonParserException() {
+    public InvalidValueException() {
         super();
     }
 
@@ -45,7 +21,7 @@ public class JsonParserException extends RuntimeException {
      * @param   message   the detail message. The detail message is saved for
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public JsonParserException(String message) {
+    public InvalidValueException(String message) {
         super(message);
     }
 
@@ -63,7 +39,7 @@ public class JsonParserException extends RuntimeException {
      *         unknown.)
      * @since  1.4
      */
-    public JsonParserException(String message, Throwable cause) {
+    public InvalidValueException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -79,7 +55,7 @@ public class JsonParserException extends RuntimeException {
      *         unknown.)
      * @since  1.4
      */
-    public JsonParserException(Throwable cause) {
+    public InvalidValueException(Throwable cause) {
         super(cause);
     }
 }

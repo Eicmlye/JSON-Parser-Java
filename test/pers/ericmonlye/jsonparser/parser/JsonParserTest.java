@@ -1,4 +1,4 @@
-package jsonparser.parser;
+package pers.ericmonlye.jsonparser.parser;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,7 +8,7 @@ import java.util.HashMap;
 //import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import jsonparser.exception.*;
+import pers.ericmonlye.jsonparser.exception.*;
 
 class JsonParserTest {
 	JsonParser parser = new JsonParser();
@@ -99,13 +99,6 @@ class JsonParserTest {
 		JsonValue keyValue = new JsonValue(contents);
 		
 		obj.put(key, keyValue);
-	}
-
-	@Test
-	void test() {
-		JsonValue val = new JsonValue("hi");
-		val.setValue(true);
-		System.out.println(val.getValue());
 	}
 	
 //	@Disabled
