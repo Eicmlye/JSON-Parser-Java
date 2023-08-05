@@ -1,4 +1,4 @@
-package jsonparser.parser;
+package pers.ericmonlye.jsonparser.parser;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
 
-import jsonparser.exception.*;
+import pers.ericmonlye.jsonparser.exception.*;
 
 public class JsonGenerator {
 	private String context;

@@ -1,11 +1,11 @@
-package jsonparser.parser;
+package pers.ericmonlye.jsonparser.parser;
 
 import java.lang.IndexOutOfBoundsException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import jsonparser.exception.*;
+import pers.ericmonlye.jsonparser.exception.*;
 
 /**
  * 

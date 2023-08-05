@@ -1,4 +1,4 @@
-package jsonparser.parser;
+package pers.ericmonlye.jsonparser.parser;
 
 import static org.junit.jupiter.api.Assertions.*;
 

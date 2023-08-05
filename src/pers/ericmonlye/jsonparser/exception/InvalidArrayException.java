@@ -1,13 +1,13 @@
-package jsonparser.exception;
+package pers.ericmonlye.jsonparser.exception;
 
-public class IncompleteItemException extends JsonParserException {
+public class InvalidArrayException extends InvalidValueException {
 	private static final long serialVersionUID = 1L;
-
+	
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public IncompleteItemException() {
+    public InvalidArrayException() {
         super();
     }
 
@@ -18,7 +18,7 @@ public class IncompleteItemException extends JsonParserException {
      * @param   message   the detail message. The detail message is saved for
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public IncompleteItemException(String message) {
+    public InvalidArrayException(String message) {
         super(message);
     }
 
@@ -36,7 +36,7 @@ public class IncompleteItemException extends JsonParserException {
      *         unknown.)
      * @since  1.4
      */
-    public IncompleteItemException(String message, Throwable cause) {
+    public InvalidArrayException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -52,7 +52,7 @@ public class IncompleteItemException extends JsonParserException {
      *         unknown.)
      * @since  1.4
      */
-    public IncompleteItemException(Throwable cause) {
+    public InvalidArrayException(Throwable cause) {
         super(cause);
     }
 }

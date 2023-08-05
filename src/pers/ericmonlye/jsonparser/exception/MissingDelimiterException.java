@@ -1,13 +1,13 @@
-package jsonparser.exception;
+package pers.ericmonlye.jsonparser.exception;
 
-public class InvalidArrayException extends InvalidValueException {
+public class MissingDelimiterException extends JsonParserException {
 	private static final long serialVersionUID = 1L;
-	
+
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public InvalidArrayException() {
+    public MissingDelimiterException() {
         super();
     }
 
@@ -18,7 +18,7 @@ public class InvalidArrayException extends InvalidValueException {
      * @param   message   the detail message. The detail message is saved for
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public InvalidArrayException(String message) {
+    public MissingDelimiterException(String message) {
         super(message);
     }
 
@@ -36,7 +36,7 @@ public class InvalidArrayException extends InvalidValueException {
      *         unknown.)
      * @since  1.4
      */
-    public InvalidArrayException(String message, Throwable cause) {
+    public MissingDelimiterException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -52,7 +52,7 @@ public class InvalidArrayException extends InvalidValueException {
      *         unknown.)
      * @since  1.4
      */
-    public InvalidArrayException(Throwable cause) {
+    public MissingDelimiterException(Throwable cause) {
         super(cause);
     }
 }

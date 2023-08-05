@@ -1,10 +1,10 @@
-package jsonparser.parser;
+package pers.ericmonlye.jsonparser.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import jsonparser.exception.*;
+import pers.ericmonlye.jsonparser.exception.*;
 
 /**
  * 
